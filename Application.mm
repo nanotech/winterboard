@@ -39,7 +39,7 @@
 #import <CoreGraphics/CGGeometry.h>
 #import <UIKit/UIKit.h>
 
-#include <objc/objc-runtime.h>
+#include <objc/runtime.h>
 
 #import <Preferences/PSRootController.h>
 #import <Preferences/PSViewController.h>
@@ -62,6 +62,8 @@ static Class $WBSettingsController;
 - (id) contentView; // < 3.2
 - (id) lastController; // < 3.2
 - (id) topViewController; // >= 3.2
+- (void) loadView; // >= 3.2
+- (void) pushViewController:(PSListController *)vc animated:(BOOL)animated; // >= 3.2
 @end
 
 @interface PSListController (Compatibility)
