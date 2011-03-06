@@ -1,0 +1,9 @@
+Package: com.yourcompany.wb-theos
+Name: wb-theos
+Depends: mobilesubstrate
+Version: 0.0.1
+Architecture: iphoneos-arm
+Description: 
+Maintainer: NanoTech
+Author: NanoTech
+Section: Tweaks
