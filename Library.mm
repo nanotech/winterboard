@@ -62,9 +62,11 @@ bool _itv;
 #import <CoreGraphics/CoreGraphics.h>
 #import <ImageIO/CGImageSource.h>
 
+#if UseAVController
 #import <Celestial/AVController.h>
 #import <Celestial/AVItem.h>
 #import <Celestial/AVQueue.h>
+#endif
 
 #include <substrate.h>
 
@@ -81,7 +83,7 @@ bool _itv;
 #import <SpringBoard/SBIconLabel.h>
 #import <SpringBoard/SBIconList.h>
 #import <SpringBoard/SBIconModel.h>
-#import <SpringBoard/SBImageCache.h>
+//#import <SpringBoard/SBImageCache.h>
 // XXX: #import <SpringBoard/SBSearchView.h>
 #import <SpringBoard/SBSearchTableViewCell.h>
 #import <SpringBoard/SBStatusBarContentsView.h>
@@ -91,17 +93,19 @@ bool _itv;
 #import <SpringBoard/SBUIController.h>
 #import <SpringBoard/SBWidgetApplicationIcon.h>
 
+#if UseMobileSMS
 #import <MobileSMS/mSMSMessageTranscriptController.h>
+#endif
 
 #import <MediaPlayer/MPMoviePlayerController.h>
 #import <MediaPlayer/MPVideoView.h>
-#import <MediaPlayer/MPVideoView-PlaybackControl.h>
 
 #import <CoreGraphics/CGGeometry.h>
 
 #import <ChatKit/CKMessageCell.h>
 
 extern "C" void __clear_cache (char *beg, char *end);
+extern "C" CGImageSourceRef CGImageSourceCreateWithURL(CFURLRef url, CFDictionaryRef options);
 
 @protocol WinterBoard
 - (void *) _node;
@@ -147,6 +151,10 @@ Class $SBWidgetApplicationIcon;
 
 static bool IsWild_;
 static bool Four_;
+
+@interface SBIcon () // < 3.2
+- (UIImage *)icon;
+@end
 
 @interface NSDictionary (WinterBoard)
 - (UIColor *) wb$colorForKey:(NSString *)key;
@@ -473,7 +481,7 @@ MSHook(UIImage *, SBApplicationIcon$icon, SBApplicationIcon *self, SEL sel) {
     return _SBApplicationIcon$icon(self, sel);
 }
 
-MSHook(UIImage *, SBApplicationIcon$generateIconImage$, SBApplicationIcon *self, SEL sel, int type) {
+MSHook(UIImage *, SBApplicationIcon$generateIconImage$, SBApplicationIcon *self, SEL sel, CGInterpolationQuality type) {
     if (type == 2)
         if (![Info_ wb$boolForKey:@"ComposeStoreIcons"]) {
             if (IsWild_)
@@ -486,7 +494,7 @@ MSHook(UIImage *, SBApplicationIcon$generateIconImage$, SBApplicationIcon *self,
                         width = [$SBIcon defaultIconImageSize].width;
                     else
                         width = 59;
-                    return width == 59 ? image : [image _imageScaledToProportion:(width / 59.0) interpolationQuality:5];
+                    return width == 59 ? image : [image _imageScaledToProportion:(width / 59.0) interpolationQuality:(CGInterpolationQuality)5]; // quality off the chart? (max is 4)
                 }
         }
     return _SBApplicationIcon$generateIconImage$(self, sel, type);
@@ -549,7 +557,7 @@ MSHook(CGImageRef, _UIImageRefAtPath, NSString *name, bool cache, UIImageOrienta
         if ([name isEqualToString:@"/System/Library/CoreServices/SpringBoard.app/SBDockBGT-Portrait.png"])
             if (NSString *path = $getTheme$([NSArray arrayWithObject:@"Dock.png"])) {
                 UIImage *image([UIImage imageWithContentsOfFile:path]);
-                CGImageRef ref([[image _imageScaledToProportion:2.4 interpolationQuality:5] imageRef]);
+                CGImageRef ref([[image _imageScaledToProportion:2.4 interpolationQuality:(CGInterpolationQuality)5] imageRef]);
                 CGImageRetain(ref);
                 return ref;
             }
@@ -1003,7 +1011,7 @@ extern "C" NSString *UIStyleStringFromColor(CGColorRef);*/
 
 WBDelegate(time_)
 
-- (CGSize) drawAtPoint:(CGPoint)point forWidth:(float)width withFont:(UIFont *)font lineBreakMode:(int)mode {
+- (CGSize) drawAtPoint:(CGPoint)point forWidth:(float)width withFont:(UIFont *)font lineBreakMode:(UILineBreakMode)mode {
     if (NSString *custom = [Info_ objectForKey:@"TimeStyle"]) {
         BOOL &_mode(MSHookIvar<BOOL>(view_, "_mode"));;
 
@@ -1050,7 +1058,7 @@ WBDelegate(time_)
 
 WBDelegate(badge_)
 
-- (CGSize) drawAtPoint:(CGPoint)point forWidth:(float)width withFont:(UIFont *)font lineBreakMode:(int)mode {
+- (CGSize) drawAtPoint:(CGPoint)point forWidth:(float)width withFont:(UIFont *)font lineBreakMode:(UILineBreakMode)mode {
     if (NSString *custom = [Info_ objectForKey:@"BadgeStyle"]) {
         [badge_ drawAtPoint:point withStyle:[NSString stringWithFormat:@""
             "font-family: Helvetica; "
@@ -1333,6 +1341,7 @@ MSHook(void, SBIconLabel$drawRect$, SBIconLabel *self, SEL sel, CGRect rect) {
     [label drawAtPoint:CGPointMake((bounds.size.width - size.width) / 2, 0) withStyle:style];
 }
 
+#if UseMobileSMS
 MSHook(void, CKMessageCell$addBalloonView$, id self, SEL sel, CKBalloonView *balloon) {
     _CKMessageCell$addBalloonView$(self, sel, balloon);
     [balloon setBackgroundColor:[UIColor clearColor]];
@@ -1390,6 +1399,7 @@ MSHook(void, TranscriptController$loadView, mSMSMessageTranscriptController *sel
             }
         }
 }
+#endif
 
 MSHook(UIImage *, _UIImageWithName, NSString *name) {
     if (Debug_)
@@ -1444,7 +1454,7 @@ MSHook(UIImage *, _UIImageWithNameInDomain, NSString *name, NSString *domain) {
     return image == nil ? __UIImageWithNameInDomain(name, domain) : image;
 }
 
-MSHook(GSFontRef, GSFontCreateWithName, const char *name, GSFontSymbolicTraits traits, float size) {
+MSHook(GSFontRef, GSFontCreateWithName, const char *name, GSFontTraitMask traits, CGFloat size) {
     if (Debug_)
         NSLog(@"WB:Debug: GSFontCreateWithName(\"%s\", %f)", name, size);
     if (NSString *font = [Info_ objectForKey:[NSString stringWithFormat:@"FontName-%s", name]])
@@ -1533,7 +1543,7 @@ static void dlset(Type_ &function, const char *name) {
         }
 }*/
 
-extern "C" void WBInitialize() {
+extern "C" __attribute__((constructor)) void WBInitialize() {
     NSAutoreleasePool *pool([[NSAutoreleasePool alloc] init]);
 
     NSString *identifier([[NSBundle mainBundle] bundleIdentifier]);
@@ -1667,12 +1677,15 @@ extern "C" void WBInitialize() {
                 if ([Info_ objectForKey:key] == nil)
                     [Info_ setObject:[info objectForKey:key] forKey:key];
 
+#if UseMobileSMS
     bool sms($getTheme$([NSArray arrayWithObjects:@"SMSBackground.png", @"SMSBackground.jpg", nil]) != nil);
+#endif
 
     SpringBoard_ = [identifier isEqualToString:@"com.apple.springboard"];
 
     if ([NSBundle bundleWithIdentifier:@"com.apple.chatkit"] != nil)
 // ChatKit {{{
+#if UseMobileSMS
         if (sms) {
             $CKMessageCell = objc_getClass("CKMessageCell");
             _CKMessageCell$addBalloonView$ = MSHookMessage($CKMessageCell, @selector(addBalloonView:), &$CKMessageCell$addBalloonView$);
@@ -1688,16 +1701,19 @@ extern "C" void WBInitialize() {
             $CKTranscriptController = objc_getClass("CKTranscriptController");
             _TranscriptController$loadView = MSHookMessage($CKTranscriptController, @selector(loadView), &$TranscriptController$loadView);
         }
+#endif
 // }}}
 
     if ([identifier isEqualToString:@"com.apple.MobileSMS"]) {
 // MobileSMS {{{
+#if UseMobileSMS
         if (sms) {
             if (_TranscriptController$loadView == NULL) {
                 Class mSMSMessageTranscriptController = objc_getClass("mSMSMessageTranscriptController");
                 _TranscriptController$loadView = MSHookMessage(mSMSMessageTranscriptController, @selector(loadView), &$TranscriptController$loadView);
             }
         }
+#endif
 // }}}
     } else if (SpringBoard_) {
 // SpringBoard {{{

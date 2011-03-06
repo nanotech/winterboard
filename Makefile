@@ -8,6 +8,8 @@ else
 TWEAK_NAME = winterboard
 SDKVERSION = 4.2
 winterboard_OBJC_FILES = Library.mm
+winterboard_FRAMEWORKS = Foundation CoreGraphics ImageIO UIKit
+winterboard_PRIVATE_FRAMEWORKS = GraphicsServices
 
 include framework/makefiles/common.mk
 include framework/makefiles/tweak.mk
