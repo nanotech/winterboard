@@ -23,9 +23,19 @@ WinterBoardSettings_FRAMEWORKS = Foundation CoreFoundation CoreGraphics UIKit
 WinterBoardSettings_PRIVATE_FRAMEWORKS = Preferences
 WinterBoardSettings_INSTALL_PATH = /System/Library/PreferenceBundles
 
+TOOL_NAME = UIImages Optimize
+
+UIImages_FILES = UIImages.mm
+UIImages_FRAMEWORKS = Foundation CoreFoundation UIKit
+UIImages_INSTALL_PATH = /Applications/WinterBoard.app
+
+Optimize_FILES = Optimize.cpp
+Optimize_INSTALL_PATH = /Applications/WinterBoard.app
+
 include framework/makefiles/common.mk
 include framework/makefiles/tweak.mk
 include framework/makefiles/application.mk
 include framework/makefiles/bundle.mk
+include framework/makefiles/tool.mk
 
 endif
