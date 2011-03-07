@@ -42,9 +42,12 @@
 #import <Preferences/PSListController.h>
 #import <Preferences/PSSpecifier.h>
 #import <Preferences/PSTableCell.h>
+#import "PreferencesCompat.h"
 #import <UIKit/UINavigationButton.h>
+#import <UIKit/UIProgressHUD.h>
 
 #include <dlfcn.h>
+#include <unistd.h>
 #include <objc/runtime.h>
 
 static BOOL (*IsIconHiddenDisplayId)(NSString *);
@@ -238,7 +241,7 @@ static NSString *_plist;
         [_tableView setEditing:YES];
         [_tableView setAllowsSelectionDuringEditing:YES];
         if ([self respondsToSelector:@selector(setView:)])
-            [self setView:_tableView];
+            [self performSelector:@selector(setView:) withObject:_tableView];
     }
     return self;
 }
@@ -274,6 +277,7 @@ static NSString *_plist;
     return _themes.count;
 }
 
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 - (id) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ThemeCell"];
     if (!cell) {
@@ -300,6 +304,7 @@ static NSString *_plist;
     [tableView deselectRowAtIndexPath:(NSIndexPath *)indexPath animated:YES];
     [self themesChanged];
 }
+#pragma GCC diagnostic warning "-Wdeprecated-declarations"
 
 - (void) tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
     NSUInteger fromIndex = [fromIndexPath row];

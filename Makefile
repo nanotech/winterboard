@@ -17,8 +17,15 @@ WinterBoard_OBJC_FILES = Application.mm
 WinterBoard_FRAMEWORKS = Foundation CoreFoundation CoreGraphics UIKit
 WinterBoard_PRIVATE_FRAMEWORKS = Preferences
 
+BUNDLE_NAME = WinterBoardSettings
+WinterBoardSettings_OBJC_FILES = Settings.mm
+WinterBoardSettings_FRAMEWORKS = Foundation CoreFoundation CoreGraphics UIKit
+WinterBoardSettings_PRIVATE_FRAMEWORKS = Preferences
+WinterBoardSettings_INSTALL_PATH = /System/Library/PreferenceBundles
+
 include framework/makefiles/common.mk
 include framework/makefiles/tweak.mk
 include framework/makefiles/application.mk
+include framework/makefiles/bundle.mk
 
 endif

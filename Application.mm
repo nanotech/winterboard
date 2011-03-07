@@ -45,6 +45,7 @@
 #import <Preferences/PSViewController.h>
 #import <Preferences/PSListController.h>
 #import <Preferences/PSSpecifier.h>
+#import "PreferencesCompat.h"
 
 static NSBundle *wbSettingsBundle;
 static Class $WBSettingsController;
@@ -55,21 +56,6 @@ static Class $WBSettingsController;
 
 @interface UIDevice (Private)
 - (BOOL) isWildcat;
-@end
-
-@interface PSRootController (Compatibility)
-- (id) _popController; // < 3.2
-- (id) contentView; // < 3.2
-- (id) lastController; // < 3.2
-- (id) topViewController; // >= 3.2
-- (void) loadView; // >= 3.2
-- (void) pushViewController:(PSListController *)vc animated:(BOOL)animated; // >= 3.2
-@end
-
-@interface PSListController (Compatibility)
-- (void) viewWillBecomeVisible:(void *)specifier; // < 3.2
-- (void) viewWillAppear:(BOOL)a; // >= 3.2
-- (void) setSpecifier:(PSSpecifier *)spec; // >= 3.2
 @end
 
 @interface WBRootController : PSRootController {
