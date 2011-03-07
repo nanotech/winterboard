@@ -8,17 +8,17 @@ else
 SDKVERSION = 4.2
 
 TWEAK_NAME = winterboard
-winterboard_OBJC_FILES = Library.mm
+winterboard_FILES = Library.mm
 winterboard_FRAMEWORKS = Foundation CoreFoundation CoreGraphics ImageIO UIKit
 winterboard_PRIVATE_FRAMEWORKS = GraphicsServices
 
 APPLICATION_NAME = WinterBoard
-WinterBoard_OBJC_FILES = Application.mm
+WinterBoard_FILES = Application.mm
 WinterBoard_FRAMEWORKS = Foundation CoreFoundation CoreGraphics UIKit
 WinterBoard_PRIVATE_FRAMEWORKS = Preferences
 
 BUNDLE_NAME = WinterBoardSettings
-WinterBoardSettings_OBJC_FILES = Settings.mm
+WinterBoardSettings_FILES = Settings.mm
 WinterBoardSettings_FRAMEWORKS = Foundation CoreFoundation CoreGraphics UIKit
 WinterBoardSettings_PRIVATE_FRAMEWORKS = Preferences
 WinterBoardSettings_INSTALL_PATH = /System/Library/PreferenceBundles
