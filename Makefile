@@ -9,12 +9,12 @@ SDKVERSION = 4.2
 
 TWEAK_NAME = winterboard
 winterboard_OBJC_FILES = Library.mm
-winterboard_FRAMEWORKS = Foundation CoreGraphics ImageIO UIKit
+winterboard_FRAMEWORKS = Foundation CoreFoundation CoreGraphics ImageIO UIKit
 winterboard_PRIVATE_FRAMEWORKS = GraphicsServices
 
 APPLICATION_NAME = WinterBoard
 WinterBoard_OBJC_FILES = Application.mm
-WinterBoard_FRAMEWORKS = Foundation CoreGraphics UIKit
+WinterBoard_FRAMEWORKS = Foundation CoreFoundation CoreGraphics UIKit
 WinterBoard_PRIVATE_FRAMEWORKS = Preferences
 
 include framework/makefiles/common.mk
